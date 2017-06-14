@@ -84,7 +84,9 @@ You generally need to kraft your example or use one of the provided examples.
 For instance, to build the example (ex1-vhdl-raw) corresponding to a VHDL implementation of a vehicle controller:
 
 > cd examples/ex1-vhdl-raw
+
 > make
+
 > ./ex1
 
 You are first advised to check that the accompanying folder 'bdd' has the BDD files for the vehicle controller generated. 
