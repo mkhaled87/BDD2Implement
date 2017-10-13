@@ -54,8 +54,8 @@ BDD2Implement has a couple of classes in the 'src' folder:
 - [BddDeterminizer.hh](src/BddDeterminizer.hh) - A C++ class to determinize the symbolic controller.
 - [BddReader.hh](src/BddReader.hh) - A C++ class to read BDD files from SCOTS or SENSE.
 - [BddToC.hh](src/BddToC.hh) - A C++ class to to generat C/C++ codes.
-- [BddToHDL.hh](src/BddToHDL.hh) - A C++ class to to generat VHDL/Verilog codes.
-- [BddToHDLdynamic.hh](src/BddToHDLdynamic.hh) - The main header file that need to be included by all programs using BDD2Implement.
+- [BddToHDL.hh](src/BddToHDL.hh) - A C++ class to to generat VHDL/Verilog codes representing a static controller.
+- [BddToHDLdynamic.hh](src/BddToHDLdynamic.hh) - A C++ class to to generat VHDL/Verilog codes representing a dynamic controller.
 - [BddToString.hh](src/BddToString.hh) - A C++ class to to dump boolean functions from BDD files.
 - [CuddMintermIterator.hh](src/CuddMintermIterator.hh) - A C++ class representing an C++ iterator for iterating over BDD minterms.
 
