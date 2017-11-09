@@ -47,7 +47,7 @@ void int_to_bool(unsigned long int in, int count, bool* out){
     int i;
     for (i = 0; i < count; i++) {
         out[i] = (in & mask) ? true : false;
-        in <<= 1;
+        in >>= 1;
     }
 }
 
