@@ -30,4 +30,4 @@ $(TARGET): $(TARGET).o
 
 
 clean:
-	rm  ./$(TARGET)  ./$(TARGET).o
+	rm  ./$(TARGET)  ./$(TARGET).o ./*.*bdd
