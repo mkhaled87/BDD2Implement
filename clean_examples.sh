@@ -4,7 +4,7 @@ do
 	cd ${dir} 
         make clean
 	cd bdd
-	make clean
+		make clean
         cd ..
 	cd ..
 done

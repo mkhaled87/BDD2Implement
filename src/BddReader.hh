@@ -584,11 +584,287 @@ private:
 }; /* close class def */
 
 
+
+#define NCS_CONTR_REMARKS_TEXT "NCS Synthesized Controller"
+
+class SENSENDDReader {
+private:
+  /* var: ddmgr_  
+   * the binary decision diagram manager */
+  Cudd *ddmgr_;
+	
+  size_t ssdim, isdim;
+  vector<size_t> ssVarsCount, isVarsCount;
+  vector<double> ssEta, ssLb, ssUb, isEta, isLb, isUb;
+  size_t nscmin, nscmax, ncamin, ncamax;
+  vector<size_t> preVars, inpVars_, postVars, qVars;
+  string Remarks;
+  
+  vector<size_t> nofBddVars_;
+		
+  /* var: bddFunction 
+   * the bdd representing the set of points */
+  BDD bddFunction;
+public:
+  /* constructor: SENSENDDReader :: default, added by MK 01.09/.2016
+   */
+  SENSENDDReader(){
+  }
+
+
+  void LoadFromFile(Cudd &ddmgr, const char *filename) {
+	  
+		ddmgr_ = &ddmgr;
+			  
+		readFromFile(filename, *ddmgr_, bddFunction, ssdim, isdim,
+						ssVarsCount, isVarsCount,
+						ssEta, ssLb, ssUb, isEta, isLb, isUb,
+						nscmin, nscmax, ncamin, ncamax,
+						preVars, inpVars_, postVars, qVars,
+						Remarks);
+
+		size_t good_remarks = Remarks.find(NCS_CONTR_REMARKS_TEXT);
+		if (good_remarks==std::string::npos)
+			throw(runtime_error("Error::ncsController:: This is not a valid NCS Controller File !!"));
+		
+		// for pre-states + q
+		for(size_t i=0; i<nscmax; i++){
+			for(size_t i=0; i<ssdim; i++){
+				if(i==0)
+					nofBddVars_.push_back(ssVarsCount[i]+1);
+				else
+					nofBddVars_.push_back(ssVarsCount[i]);
+			}				
+		}
+		for(size_t i=0; i<ncamax; i++){
+			for(size_t i=0; i<isdim; i++){
+				nofBddVars_.push_back(isVarsCount[i]);
+			}				
+		}		
+		
+		// for inputs
+		for(size_t i=0; i<isdim; i++)			
+			nofBddVars_.push_back(isVarsCount[i]);		
+		
+		// for post-states in case it is a transition relation
+		// => no need since we assume it is a controller and read it like this and check the remarks text
+		
+  }
+
+  /* function:  getDimension 
+   *
+   * get the dimension of the real space in which the points that are represented by
+   * the symbolic set live in */
+  inline size_t getDimension(void) const {
+    return (nscmax*ssdim + ncamax*isdim) + isdim;
+  }
+
+  /* function:  getBDD
+   *
+   * get the BDD that stores the function
+   */
+  inline BDD getBDD(void) const {
+    return bddFunction;
+  }  
+
+  /* function:  getnofbddvars 
+   *
+   * get the pointer to the size_t array that contains the number of bdd
+   * variables 
+   */
+  inline const size_t* getNofBddVars(void) const {
+    return nofBddVars_.data();
+  }
+  
+private:
+	
+	void readFromFile(const char* fname, Cudd& cuddManager,
+					BDD& func,
+					size_t& ssdim, size_t& isdim,
+					vector<size_t>& ssVarsCount, vector<size_t>& isVarsCount,
+					vector<double>& ssEta, vector<double>& ssLb, vector<double>& ssUb,
+					vector<double>& isEta, vector<double>& isLb, vector<double>& isUb,
+					size_t& nscmin, size_t& nscmax, size_t& ncamin, size_t& ncamax,
+					vector<size_t>& preVars, vector<size_t>& inpVars, vector<size_t>& postVars,
+					vector<size_t>& qVars,
+					string& Remarks){
+	
+	
+		ifstream nbddfile(fname);
+		if (!nbddfile.good()){
+			ostringstream os;
+			os << "Error::readNbdd:: Unable to open the file: " << fname << "'.";
+			throw runtime_error(os.str().c_str());
+		}
+	
+		/*
+		 * 1] Read meta-data
+		 */
+		string line;
+		bool meta_data_done = false;
+		while(!meta_data_done) {
+		  getline(nbddfile,line);
+		  if (line.substr(0,4)=="#NCS") {
+	
+			istringstream ssValue(line.substr(line.find(":")+1));
+			string sItem = line.substr(5, line.find(":")-5);
+			size_t size_t_tmp;
+			double double_tmp;
+	
+			if(sItem.size() == 0)
+				continue;
+	
+			if(sItem == "ssDim"){
+				ssValue >> ssdim;
+			}
+			else if(sItem == "ssEta"){
+				for(size_t i=0; i<ssdim; i++){
+					ssValue >> double_tmp;
+					ssEta.push_back(double_tmp);
+				}
+			}
+			else if(sItem == "ssLb"){
+				for(size_t i=0; i<ssdim; i++){
+					ssValue >> double_tmp;
+					ssLb.push_back(double_tmp);
+				}
+			}
+			else if(sItem == "ssUb"){
+				for(size_t i=0; i<ssdim; i++){
+					ssValue >> double_tmp;
+					ssUb.push_back(double_tmp);
+				}
+			}
+			else if(sItem == "ssVarsCount"){
+				for(size_t i=0; i<ssdim; i++){
+					ssValue >> size_t_tmp;
+					ssVarsCount.push_back(size_t_tmp);
+				}
+			}
+	
+	
+			else if(sItem == "isDim"){
+				ssValue >> isdim;
+			}
+			else if(sItem == "isEta"){
+				for(size_t i=0; i<isdim; i++){
+					ssValue >> double_tmp;
+					isEta.push_back(double_tmp);
+				}
+			}
+			else if(sItem == "isLb"){
+				for(size_t i=0; i<isdim; i++){
+					ssValue >> double_tmp;
+					isLb.push_back(double_tmp);
+				}
+			}
+			else if(sItem == "isUb"){
+				for(size_t i=0; i<isdim; i++){
+					ssValue >> double_tmp;
+					isUb.push_back(double_tmp);
+				}
+			}
+			else if(sItem == "isVarsCount"){
+				for(size_t i=0; i<isdim; i++){
+					ssValue >> size_t_tmp;
+					isVarsCount.push_back(size_t_tmp);
+				}
+			}
+	
+	
+			else if(sItem == "nscMin"){
+				ssValue >> nscmin;
+			}
+			else if(sItem == "nscMax"){
+				ssValue >> nscmax;
+			}
+			else if(sItem == "ncaMin"){
+				ssValue >> ncamin;
+			}
+			else if(sItem == "ncaMax"){
+				ssValue >> ncamax;
+			}
+	
+	
+			else if(sItem == "preVars"){
+				while(!ssValue.eof()) {
+					ssValue >> size_t_tmp;
+					preVars.push_back(size_t_tmp);
+				}
+			}
+			else if(sItem == "inpVars"){
+				while(!ssValue.eof()) {
+					ssValue >> size_t_tmp;
+					inpVars.push_back(size_t_tmp);
+				}
+			}
+			else if(sItem == "postVars"){
+				while(!ssValue.eof()) {
+					ssValue >> size_t_tmp;
+					postVars.push_back(size_t_tmp);
+				}
+			}
+			else if(sItem == "qVars"){
+				while(!ssValue.eof()) {
+					ssValue >> size_t_tmp;
+					qVars.push_back(size_t_tmp);
+				}
+			}
+	
+			else if(sItem == "Remarks"){
+	
+				Remarks = ssValue.str();
+	
+				/***************************************************************************************************/
+				/**** THIS IS THE LAST METADATA ENTRY AND WE SHOULD NOT CONTINUE AS THERE WILL COMBE THE BDD OBJ***/
+				/***************************************************************************************************/
+				meta_data_done = true;
+			}
+	
+	
+		  }
+		  else
+		  {
+			throw std::runtime_error("Error::readNbdd:: Seems to have a corrupt file !");
+		  }
+		}
+	
+		nbddfile.close();
+	
+		/*
+		 * 2] Read BDD object
+		 */
+		FILE *file = fopen(fname,"r");
+		if (file == NULL) {
+			ostringstream os;
+			os << "Error: Unable to open file:" << fname << "'.";
+			throw std::runtime_error(os.str().c_str());
+		}
+	
+		DdNode *bdd= Dddmp_cuddBddLoad( cuddManager.getManager(),\
+										DDDMP_VAR_MATCHIDS,\
+										NULL,\
+										NULL,\
+										NULL,\
+										DDDMP_MODE_BINARY,\
+										NULL,\
+										file);
+		fclose(file);
+		BDD tmp(cuddManager, bdd);
+		func=tmp;
+	
+	}  
+
+}; /* close class def */
+
+
 class BDDReader{
 	Cudd *ddmgr_;
 	string filename_;
 	BDD_FILE_TYPE type_;
 	SCOTSBDDReader scots_reader;
+	SENSENDDReader sense_reader;
+	
 public:
 	BDDReader(Cudd& ddmgr, const char *filename, BDD_FILE_TYPE type){
 		ddmgr_ = &ddmgr;
@@ -605,7 +881,8 @@ public:
 		}
 
 		if(type_ == BDD_FILE_TYPE::SENSE_NBDD){
-			throw "not yet implemented !";
+			sense_reader.LoadFromFile(*ddmgr_, filename_.c_str());
+			return sense_reader.getBDD();
 		}
 
 		return zeroBdd;
@@ -617,7 +894,7 @@ public:
 		if(type_ == BDD_FILE_TYPE::SCOTS_BDD){
 			if(dim_from >= scots_reader.getDimension() || dim_count == 0){
 				ostringstream os;
-				os << "Error: BDDReader::gettNumBddVars: invalid dimension index/count !";
+				os << "Error: BDDReader[SCOTS]::gettNumBddVars: invalid dimension index/count !";
 				throw invalid_argument(os.str().c_str());
 			}
 
@@ -629,7 +906,17 @@ public:
 		}
 
 		if(type_ == BDD_FILE_TYPE::SENSE_NBDD){
-			throw "not yet implemented !";
+			if(dim_from >= sense_reader.getDimension() || dim_count == 0){
+				ostringstream os;
+				os << "Error: BDDReader[SENSE]::gettNumBddVars: invalid dimension index/count !";
+				throw invalid_argument(os.str().c_str());
+			}
+
+			for(size_t i=dim_from; i< dim_from+dim_count; i++){
+				count+= sense_reader.getNofBddVars()[i];
+			}
+
+			return count;
 		}
 
 		return 0;
@@ -644,8 +931,17 @@ public:
 		}
 
 		return scots_reader;
-
 	}
+	
+	SENSENDDReader getSenseReader(){
+		if(type_ != BDD_FILE_TYPE::SENSE_NBDD){
+			ostringstream os;
+			os << "Error: BDDReader::getSenseReader: this is not a SENSE nbdd!";
+			throw invalid_argument(os.str().c_str());
+		}
+
+		return sense_reader;
+	}	
 
 };
 
