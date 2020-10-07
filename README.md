@@ -1,7 +1,7 @@
 BDD2Implement - A code generation tool for BDD-based symbolic controllers
 =========================================================================
 BDD2Implement is a C++ tool to generate hardware/software implementations of BDD-based symbolic controllers.
-Having the tools [SCOTS](http://www.hcs.ei.tum.de/en/software/scots/) and [SENSE](http://www.hcs.ei.tum.de/en/software/sense/) that generate BDD-based sysbolic controllers of (networked) general nonlinear dynamical systems, BDD2Implement completes missing ring in the automatic synthesis technique.
+Having the tools [SCOTS](https://github.com/mkhaled87/SCOTS-ready) and [SENSE](http://www.hcs.ei.tum.de/en/software/sense/) that generate BDD-based sysbolic controllers of (networked) general nonlinear dynamical systems, BDD2Implement completes missing ring in the automatic synthesis technique.
 
 BDD2Implement accepts static or dynamic determinized symbolic controllers in the form of BDD-files.
 The BDD files encodes the controller dynamics as boolean functions.
