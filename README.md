@@ -1,5 +1,5 @@
-BDD2Implement - A code generation tool for BDD-based symbolic controllers
-=========================================================================
+# BDD2Implement - A code generation tool for BDD-based symbolic controllers
+
 BDD2Implement is a C++ tool to generate hardware/software implementations of BDD-based symbolic controllers.
 Having the tools [SCOTS](https://github.com/mkhaled87/SCOTS-ready) and [SENSE](http://www.hcs.ei.tum.de/en/software/sense/) that generate BDD-based sysbolic controllers of (networked) general nonlinear dynamical systems, BDD2Implement completes missing ring in the automatic synthesis technique.
 
@@ -35,11 +35,7 @@ The _dddmp_ library is also used for reading and writing BDDs which already come
 
 
 
-
-
-
-Internal Structure of BDD2Implement
-===================================
+## Internal Structure of BDD2Implement
 
 File structure:
 
@@ -66,47 +62,48 @@ There is also a some utility classes in the 'src/utils.hh' file:
 - SymbolicSetInterface - For interfacing BDD files from SCOTS.
 
 
-Installation
-============
+## Installation
 
-Requirements
-------------
+### Requirements
+
 - A C++ and C compiler installed and accesible in a Unix-like environment. Linux and MacOS should be fine. Windows with Ubuntu bash or MSYS-2 is also OK.
 - An installation of the CUDD-3.0.0 library.
 - The SCOTS/SENSE tools are needed to construct symbolic controllers in BDD-based from.
 
 
-Download and build
-------------
+### Download and build
+
 As a first step, clone and build BDD2Implement:
 
-> git clone https://github.com/mkhaled87/BDD2Implement
+```
+$ git clone https://github.com/mkhaled87/BDD2Implement
+```
 
 BDD2Implement assumes by default that the CUDD library is installed in **/opt/loca/l**.
 In case it is not there, you may simply copy the headers and library files to that location.
 For example, if you used SCOTS-ready version (which have CUDD included) and installed it to **/scots/**, you may copy the files as follows:
 
-'''
-> mkdir -p /opt/local/include
-> mkdir -p /opt/local/lib
-> cp /scots/cudd-3.0.0/*.h* /opt/local/include/
-> cp /scots/cudd-3.0.0/libcudd.a /opt/local/lib/
-'''
+```
+$ mkdir -p /opt/local/include
+$ mkdir -p /opt/local/lib
+$ cp /scots/cudd-3.0.0/*.h* /opt/local/include/
+$ cp /scots/cudd-3.0.0/libcudd.a /opt/local/lib/
+```
 
 
-Using BDD2Implement
--------------------
+### Using BDD2Implement
+
 BDD2Implement is built by examples. 
 This means each example code that includes [BDD2Implement.hh](src/BDD2Implement.hh) will compile with BDD2Implement code included. 
 You generally need to kraft your example or use one of the provided examples.
 
 For instance, to build the example (ex1-vhdl-raw) corresponding to a VHDL implementation of a vehicle controller:
 
-> cd examples/ex1-vhdl-raw
-
-> make
-
-> ./ex1
+```
+$ cd examples/ex1-vhdl-raw
+$ make
+$ ./ex1
+```
 
 You are first advised to check that the accompanying folder 'bdd' has the BDD files for the vehicle controller generated. 
 If not, you need to build it and run it first. You will then need the tool SCOTS/SENSE for this.
