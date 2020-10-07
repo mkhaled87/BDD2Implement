@@ -75,6 +75,24 @@ Requirements
 - An installation of the CUDD-3.0.0 library.
 - The SCOTS/SENSE tools are needed to construct symbolic controllers in BDD-based from.
 
+
+Download and build
+------------
+As a first step, clone and build BDD2Implement:
+
+> git clone https://github.com/mkhaled87/BDD2Implement
+
+BDD2Implement assumes by default that the CUDD library is installed in **/opt/loca/l**.
+In case it is not there, you may simply copy the headers and library files to that location.
+For example, if you used SCOTS-ready version (which have CUDD included) and installed it to **/scots/**, you may copy the files as follows:
+
+> mkdir -p /opt/local/include
+> mkdir -p /opt/local/lib
+> cp /scots/cudd-3.0.0/*.h* /opt/local/include/
+> cp /scots/cudd-3.0.0/libcudd.a /opt/local/lib/
+
+
+
 Using BDD2Implement
 -------------------
 BDD2Implement is built by examples. 
