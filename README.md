@@ -86,11 +86,12 @@ BDD2Implement assumes by default that the CUDD library is installed in **/opt/lo
 In case it is not there, you may simply copy the headers and library files to that location.
 For example, if you used SCOTS-ready version (which have CUDD included) and installed it to **/scots/**, you may copy the files as follows:
 
+'''
 > mkdir -p /opt/local/include
 > mkdir -p /opt/local/lib
 > cp /scots/cudd-3.0.0/*.h* /opt/local/include/
 > cp /scots/cudd-3.0.0/libcudd.a /opt/local/lib/
-
+'''
 
 
 Using BDD2Implement
